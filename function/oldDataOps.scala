@@ -90,7 +90,6 @@ case class journalCoreJudge(journalName: String,isCore: Int)
     //入库(完整字段）
 
     val magData = getData.getMagData(hiveContext: HiveContext)
-    val coreData = getData.getCoreData(hiveContext: HiveContext)
 
     val noMatchFullData = fullInputData.join(resultNomatchData,
       fullInputData("id") === resultNomatchData("idNoMatch"))

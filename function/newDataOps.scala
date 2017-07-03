@@ -474,7 +474,7 @@ val operateSourceData = hiveContext.createDataFrame(Array(operateAndSource(1,typ
 
 
     WriteData.writeDataDiscoveryV2("t_JournalLog",resultData
-      .drop("candidateResources").drop("subject"))
+      .drop("candidateResources").drop("subject").filter("isCore = 1"))
 
     printLog.logUtil("resultData" + resultData.count())
 authorRdd
