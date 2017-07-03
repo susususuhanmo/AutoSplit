@@ -171,7 +171,9 @@ object getData {
     */
   def readSourceRdd(hiveContext: HiveContext) = {
     val CLCRdd = getCLCRdd(hiveContext)
-    val authorRdd: RDD[((String, String), Any)] = readDataV3("t_Author_withSubjectAndKeyword_kid", hiveContext)
+
+
+    val authorRddOld: RDD[((String, String), Any)] = readDataV3("t_Author_withSubjectAndKeyword_kid", hiveContext)
       .map(row =>
         ((row.getString(row.fieldIndex("name"))
           , row.getString(row.fieldIndex("partOrgan"))),
@@ -181,6 +183,18 @@ object getData {
             row.getString(row.fieldIndex("keywordAlt"))
           )
           ))
+
+
+    val authorRdd :RDD[((String, String), Any)] = readDataLog("t_CandidateExpert", hiveContext)
+      .map(row =>
+        ((row.getString(row.fieldIndex("name"))
+          , cutStr(row.getString(row.fieldIndex("organization")),4)),
+          (row.getString(row.fieldIndex("kId")),
+            row.getString(row.fieldIndex("subject")),
+            row.getString(row.fieldIndex("keyword")),
+            null)
+          )
+        )
     val universityData = readDataLog("t_University2015",hiveContext)
     .select("name","province","area","english")
       .withColumnRenamed("english","altOrganization")

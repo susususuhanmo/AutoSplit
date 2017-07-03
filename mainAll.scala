@@ -27,9 +27,9 @@ object mainAll {
     while (true) {
       val hourNow = refreshDate
       hourNow match {
-        case 11 => if (!finishedCNKI) run("CNKI",hiveContext)
-        case 12 => if(!finishedVIP) run("VIP",hiveContext)
-        case 13 => if(!finishedWF) run("WF",hiveContext)
+        case 10 => if (!finishedCNKI) run("CNKI",hiveContext)
+        case 11 => if(!finishedVIP) run("VIP",hiveContext)
+        case 12 => if(!finishedWF) run("WF",hiveContext)
         case _ => Thread.sleep(1000*60*5)
       }
     }
