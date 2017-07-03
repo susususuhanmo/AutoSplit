@@ -24,19 +24,22 @@ object mainAll {
 
   def main(args: Array[String]) {
     val hiveContext = initSpark("mainALL")
-    while (true) {
-      val hourNow = refreshDate
-      hourNow match {
-        case 13 => if (!finishedCNKI) run("CNKI",hiveContext)
-        case 15=> if(!finishedVIP && !finishedCNKI && !finishedWF) {
-          run("VIP", hiveContext)
-          run("CNKI", hiveContext)
-          run("WF", hiveContext)
-        }
-        case 14=> if(!finishedWF) run("WF",hiveContext)
-        case _ => Thread.sleep(1000*60*5)
-      }
-    }
+//    while (true) {
+//      val hourNow = refreshDate
+//      hourNow match {
+//        case 13 => if (!finishedCNKI) run("CNKI",hiveContext)
+//        case 15=> if(!finishedVIP) run("VIP", hiveContext)
+//        case 14=> if(!finishedWF) run("WF",hiveContext)
+//        case _ => Thread.sleep(1000*60*5)
+//      }
+//    }
+
+
+    run("VIP", hiveContext)
+    run("CNKI", hiveContext)
+    run("WF", hiveContext)
+
+
   }
 
 

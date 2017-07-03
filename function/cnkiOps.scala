@@ -36,7 +36,7 @@ object cnkiOps {
     * @return
     */
   def cleanAuthor(author: String): String = {
-    if(hasNoChinese(author)) return author
+    if(hasNoChinese(author)) return author.replace("|!",";")
 
     var author_tmp = deleteInvisibleChar.deleteInvisibleChar(author.toString)
     author_tmp=  GetReplacedStr.GetReplacedStr(author_tmp)

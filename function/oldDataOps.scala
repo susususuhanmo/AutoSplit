@@ -98,14 +98,21 @@ case class journalCoreJudge(journalName: String,isCore: Int)
 
 
 
-    val noMatchFullDataWithMag = noMatchFullData.join(magData,
+    val journalRdd = noMatchFullData.map(row => row.getString(row.fieldIndex("journal"))).distinct()
+    val journalCoreData = hiveContext.createDataFrame(journalRdd.map(value => journalCoreJudge(value,isCore.isCore(value))))
+
+    val noMatchFullDataWithCore = noMatchFullData.join(journalCoreData,
+      noMatchFullData("journal") === journalCoreData("journalName"), "left")
+      .drop("journalName")
+
+    val noMatchFullDataWithMag = noMatchFullDataWithCore.join(magData,
       noMatchFullData("journal") === magData("journalName"), "left")
       .drop("journalName")
 
     val operateSourceData = hiveContext.createDataFrame(Array(operateAndSource(2,types)))
     val resultData = noMatchFullDataWithMag.join(operateSourceData)
     WriteData.writeDataDiscoveryV2("t_JournalLog",resultData
-      .drop("candidateResources").drop("subject"))
+      .drop("candidateResources").drop("subject").filter("isCore = 1"))
     1
 
   }
