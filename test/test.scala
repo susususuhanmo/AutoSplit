@@ -34,6 +34,6 @@ object test {
     array
   }
   def main(args: Array[String]): Unit = {
-    cleanWfIssue("2016, (2)").foreach(println)
+    cleanWfIssue("2016, (2)")
   }
 }

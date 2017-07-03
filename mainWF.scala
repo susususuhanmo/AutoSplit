@@ -5,7 +5,7 @@ import com.zstu.libdata.StreamSplit.function.newDataOps.dealNewData0623
 import com.zstu.libdata.StreamSplit.function.{distinctRdd, getData, oldDataOps}
 import com.zstu.libdata.StreamSplit.kafka.commonClean
 import com.zstu.libdata.StreamSplit.splitAuthor.getCLC.addCLCName
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.printLog.logUtil
+import com.zstu.libdata.StreamSplit.function.printLog.logUtil
 import org.apache.spark.sql.hive.HiveContext
 
 /**
@@ -32,9 +32,9 @@ object mainWF {
     try {
 
 
-      val orgjounaldata1 = commonClean.readDataOrg("t_WF_UPDATE", hiveContext).limit(30000)
-      orgjounaldata1.registerTempTable("t_orgjournaldata")
-      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldata  where status = 0 and year = \'2017\'")
+      val orgjounaldata1 = commonClean.readDataOrg("t_WF_UPDATE", hiveContext).filter("status =0").limit(2000)
+      orgjounaldata1.registerTempTable("t_orgjournaldataWF")
+      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldataWF")
       logUtil("全部数据" + orgjournaldata.count())
 
       val simplifiedInputRdd =
@@ -46,7 +46,7 @@ object mainWF {
       val fullInputData = addCLCName(getData.getFullDataWFsql(hiveContext),clcRdd,hiveContext)
 
 
-      hiveContext.dropTempTable("t_orgjournaldata")
+      hiveContext.dropTempTable("t_orgjournaldataWF")
 
 
 

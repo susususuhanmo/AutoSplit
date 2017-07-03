@@ -2,7 +2,8 @@ package com.zstu.libdata.StreamSplit.KafkaDataClean
 
 import java.io.PrintWriter
 
-import com.zstu.libdata.function.{CheckChinese, fn_trim_invisible_code}
+import com.zstu.libdata.StreamSplit.function.{CheckChinese, deleteInvisibleChar}
+
 
 /**
   * Created by xiangjh on 2017/3/15.
@@ -39,7 +40,7 @@ object ParseCleanUtil {
     val author = f._2.toString()
     //    logUtil("=====开始清洗作者字段=====")
     try {
-      val creators: Array[String] = fn_trim_invisible_code.fn_trim_invisible_code(author.toString).split("\\|!")
+      val creators: Array[String] = deleteInvisibleChar.deleteInvisibleChar(author.toString).split("\\|!")
       var creator = ""
       for (i <- 0 to creators.length - 1) {
         val eachCreator = creators(i).trim()
@@ -67,7 +68,7 @@ object ParseCleanUtil {
     //    logUtil("=====开始清洗机构字段=====")
     try {
       //去空分割
-      val institutions: Array[String] = fn_trim_invisible_code.fn_trim_invisible_code(f._2.toString()).split("\\|!")
+      val institutions: Array[String] = deleteInvisibleChar.deleteInvisibleChar(f._2.toString()).split("\\|!")
       var institution = ""
       for (i <- 0 to institutions.length - 1) {
         val eachInstitution = institutions(i).trim()
@@ -94,7 +95,7 @@ object ParseCleanUtil {
     //    logUtil("=====开始清洗关键字中文段=====")
     try {
       //去空分割
-      val keyWords: Array[String] = fn_trim_invisible_code.fn_trim_invisible_code(f._2.toString()).split("\\|!")
+      val keyWords: Array[String] = deleteInvisibleChar.deleteInvisibleChar(f._2.toString()).split("\\|!")
       var keyWord = ""
       for (i <- 0 to keyWords.length - 1) {
         val eachKeyWord = keyWords(i).trim()
@@ -120,7 +121,7 @@ object ParseCleanUtil {
       return (f._1, "")
     try {
       //去掉不可见字符
-      var value = fn_trim_invisible_code.fn_trim_invisible_code(f._2.toString())
+      var value = deleteInvisibleChar.deleteInvisibleChar(f._2.toString())
       //标准化处理 统一处理成大写
       value = value.toUpperCase
       (f._1, value)
@@ -292,33 +293,21 @@ object ParseCleanUtil {
     val str = issue.substring(issue.indexOf("-"), issue.indexOf("页"))
     if (str.length > 1) isExists = true
     if (issue.contains("卷")) {
-      if (isExists) {
+
         val regex =
-          """([0-9]{4})年第([0-9]+)卷第([0-9A-Za-z]+)期 ([0-9A-Za-z]+).([0-9A-Za-z]+)页,共([\S]+)页""".r
-        val regex(issue_year, issue_row, issue_term, issue_page_start, issue_page_end, issue_total) = issue
-        val array: Array[String] = Array(issue_year, issue_row, issue_term, issue_page_start + "-" + issue_page_end, issue_total)
-        array
-      } else {
-        val regex =
-          """([0-9]{4})年第([0-9]+)卷第([0-9A-Za-z]+)期 ([\S]+)页,共([\S]+)页""".r
+          """([0-9]{4})年第([0-9]+)卷第([0-9A-Za-z]+)期 ([\S\s]+)页,共([\S\s]+)页""".r
         val regex(issue_year, issue_row, issue_term, issue_page_start, issue_total) = issue
-        val array: Array[String] = Array(issue_year, issue_row, issue_term, issue_page_start + "-", issue_total)
+        val array: Array[String] = Array(issue_year, issue_row, issue_term, issue_page_start, issue_total)
         array
-      }
+
     } else {
-      if (isExists) {
+
         val regex =
-          """([0-9]{4})年第([0-9A-Za-z]+)期 ([0-9A-Za-z]+).([0-9A-Za-z]+)页,共([\S]+)页""".r
-        val regex(issue_year, issue_term, issue_page_start, issue_page_end, issue_total) = issue
-        val array: Array[String] = Array(issue_year, issue_term, issue_page_start + "-" + issue_page_end, issue_total)
-        array
-      } else {
-        val regex =
-          """([0-9]{4})年第([0-9A-Za-z]+)期 ([\S]+)页,共([\S]+)页""".r
+          """([0-9]{4})年第([0-9A-Za-z]+)期 ([\S\s]+)页,共([\S\s]+)页""".r
         val regex(issue_year, issue_term, issue_page_start, issue_total) = issue
-        val array: Array[String] = Array(issue_year, issue_term, issue_page_start + "-", issue_total)
+        val array: Array[String] = Array(issue_year, issue_term, issue_page_start , issue_total).map(_.trim)
         array
-      }
+
     }
   }
 

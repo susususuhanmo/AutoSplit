@@ -2,12 +2,12 @@ package com.zstu.libdata.StreamSplit.splitAuthor
 
 
 import com.github.stuxuhai.jpinyin.{PinyinFormat, PinyinHelper}
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.Filter
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.getFirstLevelOrgan.getFirstLevelOrgan
 import com.zstu.libdata.StreamSplit.function.CommonTools._
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.DataOpsFunction.WriteData.writeDataStream
-import com.zstu.libdata.StreamSplit.splitAuthor.getCLC.{addCLCName, addCLCRddNew, addCLCRddOld}
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.keywordsOps.isNull
+import com.zstu.libdata.StreamSplit.function.Filter
+import com.zstu.libdata.StreamSplit.function.WriteData.writeDataStream
+import com.zstu.libdata.StreamSplit.function.keywordsOps.isNull
+import com.zstu.libdata.StreamSplit.splitAuthor.getCLC.{addCLCRddNew, addCLCRddOld}
+import com.zstu.libdata.StreamSplit.function.getFirstLevelOrgan.getFirstLevelOrgan
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.hive.HiveContext

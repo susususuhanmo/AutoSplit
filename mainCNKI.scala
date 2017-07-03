@@ -2,7 +2,7 @@ package com.zstu.libdata.StreamSplit
 import com.zstu.libdata.StreamSplit.function.getData._
 import com.zstu.libdata.StreamSplit.function.newDataOps.dealNewData0623
 import com.zstu.libdata.StreamSplit.function.{distinctRdd, getData, oldDataOps}
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.printLog.logUtil
+import com.zstu.libdata.StreamSplit.function.printLog.logUtil
 import org.apache.spark.sql.hive.HiveContext
 
 //import com.zstu.libdata.StreamSplit.function.oldDataOps.dealOldData
@@ -33,13 +33,16 @@ object mainCNKI {
 //      val CNKIData = readData165("t_CNKI_UPDATE",hiveContext).limit(3000)
       //    (key, (title, journal, creator, id, institute,year))
 
-      val orgjounaldata1 = commonClean.readDataOrg("t_CNKI_UPDATE", hiveContext).limit(30000)
+      val orgjounaldata1 = commonClean.readDataOrg("t_CNKI_UPDATE", hiveContext).filter("status = 0").limit(2000)
 //        .filter("status = 0").filter("year = 2017").limit(30000)
-      orgjounaldata1.registerTempTable("t_orgjournaldata")
-      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldata")
+      orgjounaldata1.registerTempTable("t_orgjournaldataCNKI")
+      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldataCNKI")
 
-      val fullInputData=   addCLCName(getData.getFullDataCNKIsql(hiveContext),clcRdd,hiveContext)
+      val fullInputData=   addCLCName(getData.getFullDataCNKIsql(hiveContext),clcRdd,hiveContext).cache()
 
+
+
+      hiveContext.dropTempTable("t_orgjournaldataCNKI")
       val simplifiedInputRdd =
         distinctRdd.distinctInputRdd(orgjournaldata.map(f =>commonClean.transformRdd_cnki_simplify(f)))
 

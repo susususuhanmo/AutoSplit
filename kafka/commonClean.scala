@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import com.zstu.libdata.StreamSplit.KafkaDataClean.ParseCleanUtil
-import com.zstu.libdata.algorithm.LevenshteinDistance
+import com.zstu.libdata.StreamSplit.function.LevenshteinDistance
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.{DataFrame, Row}
@@ -1046,11 +1046,11 @@ object commonClean {
   /**
    * 设置数据库数据
    *
-   * @param stmt
+   * @param stmt PreparedStatement
    * @param f
    *          (id,title,titleAlt,authorName,allAuthors,keywords,keywordAlt,orgName,allOrgans,year,journal,,issue,defaultUrl,isCore,volume,abstract,abstractAlt
    */
-  def setData4newdata2Journal2016(stmt: PreparedStatement, f: (String, String, String, String, String, String, String, String, String, String, String, String, String, String, Int, Int, String,String,String,String), source: Int) = {
+  def setData4newdata2Journal2016(stmt: PreparedStatement, f: (String, String, String, String, String, String, String, String, String, String, String, String, String, String, Int, Int, String,String,String,String), source: Int): Unit = {
     //DataCleanForAll.logUtil("---当前的类型为:---"+source)
     if (insertJudge(f._1))
       stmt.setString(1, f._1)

@@ -1,8 +1,6 @@
 package com.zstu.libdata.StreamSplit.function
 
 import com.zstu.libdata.StreamSplit.splitAuthor.splitAuthorFunction.splitRddNew
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.printLog
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.DataOpsFunction.WriteData
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.hive.HiveContext
@@ -470,7 +468,13 @@ val journalRdd = noMatchFullData.map(row => row.getString(row.fieldIndex("journa
 //    case class operateAndSource(operater:String,source:String)
 val operateSourceData = hiveContext.createDataFrame(Array(operateAndSource(1,types)))
     val resultData = noMatchDataWithSubject.join(operateSourceData)
-    WriteData.writeDataStream("t_JournalLog",resultData)
+
+
+//    WriteData.writeDataStream("t_JournalLog",resultData)
+
+
+    WriteData.writeDataDiscoveryV2("t_JournalLog",resultData
+      .drop("candidateResources").drop("subject"))
 
     printLog.logUtil("resultData" + resultData.count())
 authorRdd

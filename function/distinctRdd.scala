@@ -1,6 +1,5 @@
 package com.zstu.libdata.StreamSplit.function
 
-import com.zstu.libdata.algorithm.LevenshteinDistance
 import org.apache.spark.rdd.RDD
 
 import scala.collection.mutable.ArrayBuffer

@@ -9,7 +9,6 @@ package com.zstu.libdata.StreamSplit.function
  */
 object isCore {
   val coreJournals = Array(
-
     "actabiochimicaetbiophysicasinica",
     "actageologicasinica",
     "actamathematicaeapplicataesinica",
@@ -2285,12 +2284,16 @@ object isCore {
     "作物杂志"
    )
 def isCore(journal: String) : Int ={
-  for(coreJournal <- coreJournals){
-    if(coreJournal.indexOf(journal) >=0 ||
-      journal.indexOf(coreJournal) >=0
-    ) return 1
+  if(journal == null) 0
+
+  else {
+    for(coreJournal <- coreJournals){
+      if(coreJournal.indexOf(journal) >=0 ||
+        journal.indexOf(coreJournal) >=0
+      ) return 1
+    }
+    0
   }
-  0
 }
 
   def main(args: Array[String]) {

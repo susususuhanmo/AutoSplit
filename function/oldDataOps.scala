@@ -1,7 +1,6 @@
 package com.zstu.libdata.StreamSplit.function
 
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.printLog
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.DataOpsFunction.WriteData
+
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.hive.HiveContext
@@ -106,7 +105,7 @@ case class journalCoreJudge(journalName: String,isCore: Int)
 
     val operateSourceData = hiveContext.createDataFrame(Array(operateAndSource(2,types)))
     val resultData = noMatchFullDataWithMag.join(operateSourceData)
-    WriteData.writeDataStream("t_JournalLog",resultData)
+    WriteData.writeDataDiscoveryV2("t_JournalLog",resultData)
     1
 
   }

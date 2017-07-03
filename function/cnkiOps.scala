@@ -1,7 +1,7 @@
 package com.zstu.libdata.StreamSplit.function
 
 import com.zstu.libdata.StreamSplit.KafkaDataClean.ParseCleanUtil
-import com.zstu.libdata.function.{CheckChinese, DeleteCharIfIsLastNum, GetReplacedStr, fn_trim_invisible_code}
+
 import CommonTools.hasNoChinese
 /**
   * Created by xiangjh on 2017/4/2.
@@ -38,7 +38,7 @@ object cnkiOps {
   def cleanAuthor(author: String): String = {
     if(hasNoChinese(author)) return author
 
-    var author_tmp = fn_trim_invisible_code.fn_trim_invisible_code(author.toString)
+    var author_tmp = deleteInvisibleChar.deleteInvisibleChar(author.toString)
     author_tmp=  GetReplacedStr.GetReplacedStr(author_tmp)
     var creators: Array[String] = author_tmp.split("\\|!")
     if (creators.length ==1){
@@ -71,7 +71,7 @@ object cnkiOps {
   def cleanTitle(title: String): String = {
     if(title == null) null
     else {
-      var value = fn_trim_invisible_code.fn_trim_invisible_code(title)
+      var value = deleteInvisibleChar.deleteInvisibleChar(title)
       //标准化处理 统一处理成大写
       value = value.toUpperCase
       value
@@ -85,7 +85,7 @@ object cnkiOps {
     * @return
     */
   def cleanInstitute(institute: String): String = {
-    val institutions: Array[String] = fn_trim_invisible_code.fn_trim_invisible_code(institute).split("\\|!")
+    val institutions: Array[String] = deleteInvisibleChar.deleteInvisibleChar(institute).split("\\|!")
     var institution = ""
     for (i <- institutions.indices) {
       val eachInstitution = institutions(i).trim()
@@ -109,7 +109,7 @@ object cnkiOps {
     * @return
     */
   def cleanKeyWord(keys: String): String = {
-    val keyWords: Array[String] = fn_trim_invisible_code.fn_trim_invisible_code(keys).split("\\|!")
+    val keyWords: Array[String] = deleteInvisibleChar.deleteInvisibleChar(keys).split("\\|!")
     var keyWord = ""
     for (i <- keyWords.indices) {
       val eachKeyWord = keyWords(i).trim()
@@ -128,7 +128,7 @@ object cnkiOps {
   def cleanJournal(journal: String): String = {
     if(journal == null) null
     else {
-      var journals = fn_trim_invisible_code.fn_trim_invisible_code(journal)
+      var journals = deleteInvisibleChar.deleteInvisibleChar(journal)
       journals = GetReplacedStr.GetReplacedStr(journals)
       if (journals == null) {
         return null
@@ -148,7 +148,7 @@ object cnkiOps {
     * @return
     */
   def cleanUnJournal(journal: String): String = {
-    val journals = fn_trim_invisible_code.fn_trim_invisible_code(journal)
+    val journals = deleteInvisibleChar.deleteInvisibleChar(journal)
     var journalstr = ""
     if(journals == null)
       journalstr =""

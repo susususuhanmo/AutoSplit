@@ -8,7 +8,7 @@ import org.apache.spark.sql.hive.HiveContext
 //import com.zstu.libdata.StreamSplit.function.oldDataOps.dealOldData
 import com.zstu.libdata.StreamSplit.kafka.commonClean
 import com.zstu.libdata.StreamSplit.splitAuthor.getCLC.addCLCName
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.printLog.logUtil
+import com.zstu.libdata.StreamSplit.function.printLog.logUtil
 
 /**
   * Created by Administrator on 2017/6/24 0024.
@@ -36,14 +36,22 @@ object mainVIP {
       //      val CNKIData = readData165("t_CNKI_UPDATE",hiveContext).limit(3000)
       //    (key, (title, journal, creator, id, institute,year))
 
-      val orgjounaldata1 = commonClean.readDataOrg("t_VIP_UPDATE", hiveContext).limit(30000)
-      orgjounaldata1.registerTempTable("t_orgjournaldata")
-      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldata")
-      val fullInputData=  addCLCName(getData.getFullDataVIPsql(hiveContext),clcRdd,hiveContext)
+      val orgjounaldata1 = commonClean.readDataOrg("t_VIP_UPDATE", hiveContext).filter("status = 0").limit(2000)
+      orgjounaldata1.registerTempTable("t_orgjournaldataVIP")
+      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldataVIP")
+      val fullInputData=  addCLCName(getData.getFullDataVIPsql(hiveContext),clcRdd,hiveContext).cache()
+
+
 
       val simplifiedInputRdd =
         distinctRdd.distinctInputRdd(orgjournaldata.map(f =>commonClean.transformRdd_vip_simplify(f)))
 
+
+
+
+
+
+      hiveContext.dropTempTable("t_orgjournaldataVIP")
       // val simplifiedInputRdd =getSimplifiedInputRdd(CNKIData)
       logUtil("简化后的数据" + simplifiedInputRdd.count())
       val forSplitRdd =getForSplitRdd(fullInputData)

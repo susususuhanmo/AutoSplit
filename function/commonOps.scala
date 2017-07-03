@@ -3,7 +3,6 @@ package com.zstu.libdata.StreamSplit.function
 import java.sql.{PreparedStatement, Types}
 
 import com.zstu.libdata.StreamSplit.KafkaDataClean.ParseCleanUtil
-import com.zstu.libdata.algorithm.LevenshteinDistance
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.hive.HiveContext

@@ -1,8 +1,10 @@
 package com.zstu.libdata.StreamSplit.splitAuthor
 
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.AuthorFunction.keywordsOps.{formatRddNew, getFormattedSubject, keywordCatNew, splitCodeNew}
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.DataOpsFunction.CommonTools.cutStr
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.DataOpsFunction.ReadData
+import com.zstu.libdata.StreamSplit.function.ReadData
+import com.zstu.libdata.StreamSplit.function.keywordsOps.{formatRddNew, getFormattedSubject, keywordCatNew, splitCodeNew}
+import com.zstu.libdata.StreamSplit.function.CommonTools.cutStr
+
+
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.hive.HiveContext

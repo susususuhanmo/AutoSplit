@@ -4,7 +4,7 @@ import com.zstu.libdata.StreamSplit.function.CommonTools._
 import com.zstu.libdata.StreamSplit.function.commonOps._
 import com.zstu.libdata.StreamSplit.function.distinctRdd.distinctInputRdd
 import com.zstu.libdata.StreamSplit.splitAuthor.getCLC.getCLCRdd
-import com.zstu.libdata.dataCleanTools.StreamCleanAndMatch.DataOpsFunction.ReadData.{readDataLog, readDataV3}
+import ReadData.{readDataLog, readDataV3}
 import com.zstu.libdata.StreamSplit.kafka.{cnkiClean, commonClean}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.hive.HiveContext
@@ -50,7 +50,9 @@ object getData {
       "cleanJournal(journal) as journal," +
       "getChineseAbstract(abstract) as abstract," +
       "getEnglishAbstract(abstract) as abstractAlt " +
-      "from t_orgjournaldata  where status = 0 and year = \'2017\'")
+      "from t_orgjournaldataCNKI " +
+//      " where status = 0 and year = \'2017\'" +
+      "")
   }
 
   def getFullDataVIPsql(hiveContext: HiveContext)={
@@ -95,7 +97,9 @@ object getData {
       "cleanJournal(journal_name) as journal," +
       "getChineseAbstract(abstract) as abstract," +
       "getEnglishAbstract(abstract) as abstractAlt " +
-      "from t_orgjournaldata  where status = 0 and year = \'2017\'")
+      "from t_orgjournaldataVIP " +
+//      " where status = 0 and year = \'2017\'" +
+      "")
   }
 
 
@@ -143,7 +147,9 @@ object getData {
       "cleanJournal(journal_name) as journal," +
       "getChineseAbstract(abstract) as abstract," +
       "getEnglishAbstract(abstract) as abstractAlt " +
-      "from t_orgjournaldata  where status = 0 and year = \'2017\'")
+      "from t_orgjournaldataWF " +
+//      " where status = 0 and year = \'2017\'" +
+      "")
   }
 
 

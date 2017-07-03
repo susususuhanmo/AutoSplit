@@ -3,7 +3,8 @@ package com.zstu.libdata.StreamSplit.kafka
 import java.io.PrintWriter
 
 import com.zstu.libdata.StreamSplit.KafkaDataClean.ParseCleanUtil
-import com.zstu.libdata.function.{CheckChinese, DeleteCharIfIsLastNum, GetReplacedStr, fn_trim_invisible_code}
+import com.zstu.libdata.StreamSplit.function.{CheckChinese, DeleteCharIfIsLastNum, GetReplacedStr, deleteInvisibleChar}
+
 
 /**
   * Created by xiangjh on 2017/4/2.
@@ -87,7 +88,7 @@ object cnkiClean {
 
     val ischinese = CheckChinese.CheckChinese(author.toString())
     if(ischinese == 2){ //如果是中文
-      author_tmp = fn_trim_invisible_code.fn_trim_invisible_code(author_tmp)
+      author_tmp = deleteInvisibleChar.deleteInvisibleChar(author_tmp)
       author_tmp=  GetReplacedStr.GetReplacedStr(author_tmp)
     }
 
@@ -143,7 +144,7 @@ object cnkiClean {
 
     if(ischinese == 2){ //如果是中文
 
-      author_tmp = fn_trim_invisible_code.fn_trim_invisible_code(author_tmp)
+      author_tmp = deleteInvisibleChar.deleteInvisibleChar(author_tmp)
       author_tmp=  GetReplacedStr.GetReplacedStr(author_tmp)
     }else{
 
@@ -194,7 +195,7 @@ object cnkiClean {
     * @return
     */
   def cleanTitle(title: String): String = {
-    var value = fn_trim_invisible_code.fn_trim_invisible_code(title)
+    var value = deleteInvisibleChar.deleteInvisibleChar(title)
     //标准化处理 统一处理成大写
     value = value.toUpperCase
     value
@@ -207,7 +208,7 @@ object cnkiClean {
     * @return
     */
   def cleanInstitute(institute: String): String = {
-    val institutions: Array[String] = fn_trim_invisible_code.fn_trim_invisible_code(institute).split("\\|!")
+    val institutions: Array[String] = deleteInvisibleChar.deleteInvisibleChar(institute).split("\\|!")
     var institution = ""
     for (i <- 0 to institutions.length - 1) {
       val eachInstitution = institutions(i).trim()
@@ -231,7 +232,7 @@ object cnkiClean {
     * @return
     */
   def cleanKeyWord(keys: String): String = {
-    val keyWords: Array[String] = fn_trim_invisible_code.fn_trim_invisible_code(keys).split("\\|!")
+    val keyWords: Array[String] = deleteInvisibleChar.deleteInvisibleChar(keys).split("\\|!")
     var keyWord = ""
     for (i <- 0 to keyWords.length - 1) {
       val eachKeyWord = keyWords(i).trim()
@@ -251,7 +252,7 @@ object cnkiClean {
     var journals = journal
     val ischinese = CheckChinese.CheckChinese(journal)
     if(ischinese == 2){//中文
-      journals = fn_trim_invisible_code.fn_trim_invisible_code(journal)
+      journals = deleteInvisibleChar.deleteInvisibleChar(journal)
       journals = GetReplacedStr.GetReplacedStr(journals)
       if (journals == null) {
         return null
@@ -272,7 +273,7 @@ object cnkiClean {
     * @return
     */
   def cleanUnJournal(journal: String): String = {
-    val journals = fn_trim_invisible_code.fn_trim_invisible_code(journal)
+    val journals = deleteInvisibleChar.deleteInvisibleChar(journal)
     var journalstr = ""
     if(journals == null)
       journalstr =""
