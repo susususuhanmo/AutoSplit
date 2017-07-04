@@ -2,7 +2,7 @@ package com.zstu.libdata.StreamSplit
 
 import com.zstu.libdata.StreamSplit.function.getData.{getForSplitRdd, getRightRddAndReportError, readSourceRdd}
 import com.zstu.libdata.StreamSplit.function.newDataOps.dealNewData0623
-import com.zstu.libdata.StreamSplit.function.{distinctRdd, getData, oldDataOps}
+import com.zstu.libdata.StreamSplit.function._
 import com.zstu.libdata.StreamSplit.kafka.commonClean
 import com.zstu.libdata.StreamSplit.splitAuthor.getCLC.addCLCName
 import com.zstu.libdata.StreamSplit.function.printLog.logUtil
@@ -32,9 +32,14 @@ object mainWF {
     try {
 
 
-      val orgjounaldata1 = commonClean.readDataOrg("t_WF_UPDATE", hiveContext).filter("status =0").limit(2000)
-      orgjounaldata1.registerTempTable("t_orgjournaldataWF")
-      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldataWF")
+      val orgjournaldata = commonClean.readDataOrg("t_WF_UPDATE", hiveContext)
+        .filter("status =0")
+      orgjournaldata.registerTempTable("t_orgjournaldataWF")
+
+      val logData = hiveContext.sql("select GUID as id,"+types+" as resource from t_orgjournaldataWF")
+      WriteData.writeDataLog("t_Log",logData)
+
+
       logUtil("全部数据" + orgjournaldata.count())
 
       val simplifiedInputRdd =
@@ -52,7 +57,7 @@ object mainWF {
 
 
 //      val simplifiedInputRdd = getSimplifiedInputRdd(fullInputData)
-//      logUtil("简化后的数据" + simplifiedInputRdd.count())
+      logUtil("简化后的数据" + simplifiedInputRdd.count())
       val forSplitRdd = getForSplitRdd(fullInputData)
       logUtil("待拆分的数据" + forSplitRdd.count())
 
@@ -61,8 +66,13 @@ object mainWF {
 
 
       //过滤出正常数据并将错误数据反馈
-      val rightInputRdd = getRightRddAndReportError(simplifiedInputRdd, hiveContext)
+      val (rightInputRdd,errorRdd) = getRightRddAndReportError(simplifiedInputRdd, hiveContext)
       logUtil("正常数据" + rightInputRdd.count())
+
+      WriteData.writeErrorData(errorRdd,types,hiveContext)
+
+
+
 
       //开始查重 join group
       val inputJoinJournalRdd = rightInputRdd.leftOuterJoin(simplifiedJournalRdd).map(f => (f._2._1._4, f._2))

@@ -68,7 +68,7 @@ object commonOps {
     * @return
     */
   def insertData(tableName: String, hiveContext: HiveContext, writeErrorRDD: RDD[(String, String)]) = {
-    val option = Map("url" -> sqlUrl, "user" -> "fzj", "password" -> "fzjfzj", "dbtable" -> tableName,
+    val option = Map("url" -> sqlUrl, "user" -> userName, "password" -> passWord, "dbtable" -> tableName,
       "driver" -> "com.microsoft.sqlserver.jdbc.SQLServerDriver")
     val data = hiveContext.read.format("jdbc").options(option).load()
     data.registerTempTable("error")
@@ -280,9 +280,13 @@ object commonOps {
     * @return
     */
   def filterErrorRecord(value: (String, String, String, String, String,String)): Boolean = {
+//    (key, (title, journal, creator, id,institute,year))
+
+
     if (value == None) return true
     if (value._1 == null || value._1.equals("")) return true
     if (value._2 == null || value._2.equals("")) return true
+    if (value._6 == null || value._6.equals("")) return true
     else
       return false
   }

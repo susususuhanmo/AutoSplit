@@ -2,7 +2,7 @@ package com.zstu.libdata.StreamSplit
 
 import com.zstu.libdata.StreamSplit.function.getData.{getForSplitRdd, getRightRddAndReportError, readSourceRdd}
 import com.zstu.libdata.StreamSplit.function.newDataOps.dealNewData0623
-import com.zstu.libdata.StreamSplit.function.{distinctRdd, getData, oldDataOps}
+import com.zstu.libdata.StreamSplit.function._
 import org.apache.spark.sql.hive.HiveContext
 
 //import com.zstu.libdata.StreamSplit.function.oldDataOps.dealOldData
@@ -36,9 +36,15 @@ object mainVIP {
       //      val CNKIData = readData165("t_CNKI_UPDATE",hiveContext).limit(3000)
       //    (key, (title, journal, creator, id, institute,year))
 
-      val orgjounaldata1 = commonClean.readDataOrg("t_VIP_UPDATE", hiveContext).filter("status = 0").limit(2000)
-      orgjounaldata1.registerTempTable("t_orgjournaldataVIP")
-      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldataVIP")
+      val orgjournaldata = commonClean.readDataOrg("t_VIP_UPDATE", hiveContext)
+        .filter("status = 0")
+      orgjournaldata.registerTempTable("t_orgjournaldataVIP")
+
+
+
+      val logData = hiveContext.sql("select GUID as id,"+types+" as resource from t_orgjournaldataVIP")
+      WriteData.writeDataLog("t_Log",logData)
+
       val fullInputData=  addCLCName(getData.getFullDataVIPsql(hiveContext),clcRdd,hiveContext).cache()
 
 
@@ -87,8 +93,11 @@ object mainVIP {
 
 
       //过滤出正常数据并将错误数据反馈
-      val rightInputRdd = getRightRddAndReportError(simplifiedInputRdd, hiveContext)
+      val (rightInputRdd,errorRdd) = getRightRddAndReportError(simplifiedInputRdd, hiveContext)
       logUtil("正常数据" + rightInputRdd.count())
+
+      WriteData.writeErrorData(errorRdd,types,hiveContext)
+
 
       //开始查重 join group
       val inputJoinJournalRdd = rightInputRdd.leftOuterJoin(simplifiedJournalRdd).map(f => (f._2._1._4, f._2))

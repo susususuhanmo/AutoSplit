@@ -111,6 +111,10 @@ case class journalCoreJudge(journalName: String,isCore: Int)
 
     val operateSourceData = hiveContext.createDataFrame(Array(operateAndSource(2,types)))
     val resultData = noMatchFullDataWithMag.join(operateSourceData)
+
+
+    WriteData.writeDataLog("t_JournalLog",resultData)
+
     WriteData.writeDataDiscoveryV2("t_JournalLog",resultData
       .drop("candidateResources").drop("subject").filter("isCore = 1"))
     1

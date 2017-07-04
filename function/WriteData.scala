@@ -47,7 +47,7 @@ object WriteData {
     dataFrame.write.mode(SaveMode.Append).jdbc(sqlUrl, tableName, connectProperties)
 
   }
-  def writeDataStream(tableName: String,dataFrame: DataFrame): Unit = {
+  def writeDataLog(tableName: String, dataFrame: DataFrame): Unit = {
     //设置好连接属性用于写数据
     val connectProperties = new Properties()
     connectProperties.put("user", "fzj")
@@ -137,6 +137,24 @@ object WriteData {
       value._7,value._8)
     cadalDataColumnName(id: String, title: String,creator: String, publisher: String,
       year: String, isbn: String,subject: String,classification: String)
+  }
+
+  case class errorData(id: String,resource: Int)
+  def writeErrorData(errorRdd:RDD[String],types: Int,hiveContext: HiveContext) ={
+
+    val connectProperties = new Properties()
+    connectProperties.put("user", "fzj")
+    connectProperties.put("password", "fzj@zju")
+    Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance()
+    val sqlUrl = "jdbc:sqlserver://192.168.1.160:1433;DatabaseName=Log;"
+
+
+    val dataFrame = hiveContext.createDataFrame(errorRdd.map(value =>
+      errorData(value,types)
+    ))
+
+    dataFrame.write.mode(SaveMode.Append).jdbc(sqlUrl, "t_Error", connectProperties)
+
   }
   case class matchedDataColumnName(cadalid: String, otherid: String, subject: String, isbn: String,
                            classification: String, category: String, matchCategory: String)

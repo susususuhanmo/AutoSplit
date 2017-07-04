@@ -4,7 +4,7 @@ package com.zstu.libdata.StreamSplit.splitAuthor
 import com.github.stuxuhai.jpinyin.{PinyinFormat, PinyinHelper}
 import com.zstu.libdata.StreamSplit.function.CommonTools._
 import com.zstu.libdata.StreamSplit.function.Filter
-import com.zstu.libdata.StreamSplit.function.WriteData.writeDataStream
+import com.zstu.libdata.StreamSplit.function.WriteData.writeDataLog
 import com.zstu.libdata.StreamSplit.function.keywordsOps.isNull
 import com.zstu.libdata.StreamSplit.splitAuthor.getCLC.{addCLCRddNew, addCLCRddOld}
 import com.zstu.libdata.StreamSplit.function.getFirstLevelOrgan.getFirstLevelOrgan
@@ -392,7 +392,7 @@ updateKeyword: String,updateKeywordAlt: String,organization: String)
     if(value._6 == "0") false else true,
     value._7,value._8)
 ))
-    writeDataStream("t_PaperAuthorLog",paperAuthorData)
+    writeDataLog("t_PaperAuthorLog",paperAuthorData)
     val paperAuthorId = paperAuthorData.select("authorId")
 
     val finalAuthorData = resultAuthorData.join(paperAuthorId,
@@ -400,13 +400,13 @@ updateKeyword: String,updateKeywordAlt: String,organization: String)
       .filter("authorId is not null")
     .drop("authorId")
     .distinct()
-    writeDataStream("t_ExpertLog",finalAuthorData)
+    writeDataLog("t_ExpertLog",finalAuthorData)
     val candidateResourceRdd = paperAuthorRdd.map(value =>
       (newGuid(),value._8,value._1,value._9,value._8,value._2)).cache
 val candidateResourceData = hiveContext.createDataFrame(
   candidateResourceRdd.map(value =>candidateResource(value._1,value._2,value._3))
   )
-    writeDataStream("t_CandidateResourceLog",candidateResourceData)
+    writeDataLog("t_CandidateResourceLog",candidateResourceData)
 //    (paperId,name,organ,partOrgan,journal,isFirst,firstLevelOrgan
     // ,authorId,any:(keywordNew,keywordAltNew,subjectNew,paperId,journal))
 
@@ -423,7 +423,7 @@ val candidateResourceData = hiveContext.createDataFrame(
 
 
   val keyWordresultData = hiveContext.createDataFrame(keyWord)
-    writeDataStream("t_KeywordLog",keyWordresultData)
+    writeDataLog("t_KeywordLog",keyWordresultData)
     //    (paperId,name,organ,partOrgan,journal,isFirst,firstLevelOrgan
     // ,authorId,any:(keywordNew,keywordAltNew,subjectNew,paperId,journal))
 

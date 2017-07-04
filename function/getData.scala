@@ -39,7 +39,7 @@ object getData {
     hiveContext.udf.register("getEnglishAbstract", (str: String) =>if(str !="" && str !=null) cnkiClean.getEnglishAbstract(str) else null)
     hiveContext.sql("select " +
       "GUID as id,year,issue,url,page,subject as classifications,DOI,ISSN," +
-      "cleanTitle(getChineseAbstract(title)) as title," +
+      "cleanTitle(title) as title," +
       "getFirstCreator(cleanAuthor(creator)) as creator," +
       "cleanSplitChar(creator_all) as creatorAlt," +
       "cleanAuthor(creator) as creatorAll," +
@@ -85,7 +85,7 @@ object getData {
       "getPage(issue) as page," +
       "getIssue(issue) as issue," +
       "getVolume(issue) as volume," +
-      "cleanTitle(getChineseAbstract(title)) as title," +
+      "cleanTitle(title) as title," +
       "title_alt as titleAlt," +
       "getFirstCreator(cleanAuthor(creator_2)) as creator," +
       "cleanSplitChar(creator_all) as creatorAlt," +
@@ -135,7 +135,7 @@ object getData {
 //      "getPage(issue) as page," +
       "getIssue(issue) as issue," +
       "getVolume(issue) as volume," +
-      "cleanTitle(getChineseAbstract(title)) as title," +
+      "cleanTitle(title) as title," +
       "title_alt as titleAlt," +
       "getFirstCreator(cleanAuthor(creator)) as creator," +
       "cleanSplitChar(creator_all) as creatorAlt," +
@@ -308,19 +308,16 @@ object getData {
     * @param hiveContext        hiveContext
     * @return rightRdd
     */
-  def getRightRddAndReportError(simplifiedInputRdd: RDD[(String, (String, String, String, String, String, String))], hiveContext: HiveContext): RDD[(String, (String, String, String, String, String, String))] = {
+  def getRightRddAndReportError(simplifiedInputRdd: RDD[(String, (String, String, String, String, String, String))], hiveContext: HiveContext)= {
     //errorRDD也是一个集合，存放streamingRDD中的错误数据
-    val (errorRDD, rightRdd) = (simplifiedInputRdd.filter(f => {
-      commonOps.filterErrorRecord(f._2)
-    })
-      , simplifiedInputRdd.filter(f => commonOps.filterTargetRecord(f._2)))
+    val (errorRDD, rightRdd) = (
+      simplifiedInputRdd.filter(f => commonOps.filterErrorRecord(f._2))
+      , simplifiedInputRdd.filter(f => !commonOps.filterErrorRecord(f._2)))
     //把errorRDD集合映射成t_error表（sqlserver）中的字段
-    val writeErrorRDD = errorRDD.map(f => (f._2._4, f._2.toString()))
-    if (writeErrorRDD.count() > 0) {
-//      commonOps.insertData("t_Error", hiveContext, writeErrorRDD)
-    }
 
-    rightRdd
+
+
+    (rightRdd,errorRDD.map(value => value._2._4))
   }
 
 

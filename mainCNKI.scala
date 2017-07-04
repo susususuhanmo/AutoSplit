@@ -1,7 +1,7 @@
 package com.zstu.libdata.StreamSplit
 import com.zstu.libdata.StreamSplit.function.getData._
 import com.zstu.libdata.StreamSplit.function.newDataOps.dealNewData0623
-import com.zstu.libdata.StreamSplit.function.{distinctRdd, getData, oldDataOps}
+import com.zstu.libdata.StreamSplit.function._
 import com.zstu.libdata.StreamSplit.function.printLog.logUtil
 import org.apache.spark.sql.hive.HiveContext
 
@@ -11,7 +11,9 @@ import com.zstu.libdata.StreamSplit.splitAuthor.getCLC.addCLCName
 /**
   * Created by Administrator on 2017/6/13 0013.
   */
+
 object mainCNKI {
+
   def main(hiveContext:HiveContext): Unit = {
 
     val types = 2
@@ -33,10 +35,17 @@ object mainCNKI {
 //      val CNKIData = readData165("t_CNKI_UPDATE",hiveContext).limit(3000)
       //    (key, (title, journal, creator, id, institute,year))
 
-      val orgjounaldata1 = commonClean.readDataOrg("t_CNKI_UPDATE", hiveContext).filter("status = 0").limit(2000)
+      val orgjournaldata = commonClean.readDataOrg("t_CNKI_UPDATE", hiveContext)
+        .filter("status = 0")
+
+
+
 //        .filter("status = 0").filter("year = 2017").limit(30000)
-      orgjounaldata1.registerTempTable("t_orgjournaldataCNKI")
-      val orgjournaldata = hiveContext.sql("select * from t_orgjournaldataCNKI")
+       orgjournaldata.registerTempTable("t_orgjournaldataCNKI")
+
+      val logData = hiveContext.sql("select GUID as id,"+types+" as resource from t_orgjournaldataCNKI")
+      WriteData.writeDataLog("t_Log",logData)
+
 
       val fullInputData=   addCLCName(getData.getFullDataCNKIsql(hiveContext),clcRdd,hiveContext).cache()
 
@@ -81,8 +90,10 @@ object mainCNKI {
 
 
       //过滤出正常数据并将错误数据反馈
-      val rightInputRdd = getRightRddAndReportError(simplifiedInputRdd, hiveContext)
+      val (rightInputRdd,errorRdd) = getRightRddAndReportError(simplifiedInputRdd, hiveContext)
       logUtil("正常数据" + rightInputRdd.count())
+
+      WriteData.writeErrorData(errorRdd,types,hiveContext)
 
       //开始查重 join group
       val inputJoinJournalRdd = rightInputRdd.leftOuterJoin(simplifiedJournalRdd).map(f => (f._2._1._4, f._2))

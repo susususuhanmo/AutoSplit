@@ -467,12 +467,12 @@ val journalRdd = noMatchFullData.map(row => row.getString(row.fieldIndex("journa
 
 //    case class operateAndSource(operater:String,source:String)
 val operateSourceData = hiveContext.createDataFrame(Array(operateAndSource(1,types)))
-    val resultData = noMatchDataWithSubject.join(operateSourceData)
+    val resultData = noMatchDataWithSubject.join(operateSourceData).cache
 
 
 //    WriteData.writeDataStream("t_JournalLog",resultData)
 
-
+    WriteData.writeDataLog("t_JournalLog",resultData)
     WriteData.writeDataDiscoveryV2("t_JournalLog",resultData
       .drop("candidateResources").drop("subject").filter("isCore = 1"))
 
